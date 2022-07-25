@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta charset="UTF-8" name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <title>明日方舟造图器（丐版）</title>
+</head>
+<style>
+    table,
+    table tr th,
+    table tr td {
+        position: relative;
+        z-index: 0;
+        border: 1px solid rgb(47, 47, 47);
+        padding: 0;
+        border-spacing: 0px;
+    }
+
+    td {
+        position: relative;
+        z-index: 1;
+        display: inline-block;
+        padding: 0;
+        width: 50px;
+        height: 50px;
+    }
+
+    img {
+        position: relative;
+        z-index: 2;
+        width: 50px;
+        height: 50px;
+    }
+
+    img.line {
+        width: 2px;
+        position: absolute;
+        z-index: 1001;
+    }
+
+    img.stop {
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        z-index: 1002;
+    }
+
+    p.time {
+        color: rgb(103, 83, 48);
+        font-size: medium;
+        position: absolute;
+        z-index: 1003;
+    }
+
+    #panel1,
+    #flip1,
+    #panel2,
+    #flip2 {
+        position: relative;
+        z-index: 3;
+        padding: 5px;
+        text-align: center;
+        background-color: #ededed;
+        border: solid 1px #c3c3c3;
+    }
+
+    #flip1,
+    #flip2 {
+        font-size: large;
+    }
+
+    #panel1,
+    #panel2 {
+        position: relative;
+        z-index: 4;
+        padding: 20px;
+        display: none;
+    }
+
+    .pathinfo button,
+    .pathinfo input {
+        margin: 5px;
+    }
+
+    button#changeMode {
+        font-size: large;
+        z-index: 100;
+        position: fixed;
+        width: 200px;
+        height: 50px;
+        top: 100px;
+        left: 5px;
+    }
+</style>
+
+<body>
+    <h1 align="center">明日方舟造图器（丐版）</h1>
+    <button id="changeMode" onclick="choose_mode()">切换为路线编辑模式</button>
+    <div>
+        <div id="map"></div>
+        <table border="0" cellspacing="1" cellpadding="4" border-spacing="0" align="center">
+            <tr>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+            </tr>
+            <tr>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+            </tr>
+            <tr>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+            </tr>
+            <tr>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+            </tr>
+            <tr>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+            </tr>
+            <tr>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+            </tr>
+            <tr>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+            </tr>
+            <tr>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+            </tr>
+            <tr>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+            </tr>
+            <tr>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+                <td class="block"></td>
+            </tr>
+        </table>
+    </div>
+    <p id="inform" align="center" style="font-size:large">未选择色块或地形</p>
+    <div id="flip1">展开/收起地形选择器</div>
+    <div id="panel1">
+        <table align="center">
+            <tr>
+                <td>基本<br>地形</td>
+                <td><img onclick="choose_landform(this)" id="背景" src="ba/背景.png"></td>
+                <td><img onclick="choose_landform(this)" id="近战位" src="ba/近战位.png"></td>
+                <td><img onclick="choose_landform(this)" id="高台位" src="ba/高台位.png"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><input type="color" id="picker" style="width:50px;height:25px"></input><input type="submit"
+                        onclick="choose_color()" value="选择" style="width:50px;height:25px"></input></td>
+                <td><button onclick="choose_rotate()" value="旋转" style="width:50px;height:50px">旋转</button></td>
+                <td><button type="submit" onclick="choose_eraser()" value="橡皮"
+                        style="width:50px;height:50px">橡皮</button></td>
+            </tr>
+            <tr>
+                <td>特殊<br>地形</td>
+                <td><img onclick="choose_sp(this)" id="侵入点" src="sp/侵入点.png"></td>
+                <td><img onclick="choose_sp(this)" id="保护点" src="sp/保护点.png"></td>
+                <td><img onclick="choose_sp(this)" id="禁止部署" src="sp/禁止部署.png"></td>
+                <td><img onclick="choose_sp(this)" id="不可通行地块" src="sp/不可通行地块.png"></td>
+                <td><img onclick="choose_sp(this)" id="医疗符文" src="sp/医疗符文.png"></td>
+                <td><img onclick="choose_sp(this)" id="防空符文" src="sp/防空符文.png"></td>
+                <td><img onclick="choose_sp(this)" id="防御符文" src="sp/防御符文.png"></td>
+                <td><img onclick="choose_sp(this)" id="特种战术点" src="sp/特种战术点.png"></td>
+                <td><img onclick="choose_sp(this)" id="活性源石" src="sp/活性源石.png"></td>
+                <td><img onclick="choose_sp(this)" id="热泵通道" src="sp/热泵通道.png"></td>
+                <td><img onclick="choose_sp(this)" id="岩浆喷射处" src="sp/岩浆喷射处.png"></td>
+                <td><img onclick="choose_sp(this)" id="腐蚀地面" src="sp/腐蚀地面.png"></td>
+                <td><img onclick="choose_sp(this)" id="地穴" src="sp/地穴.png"></td>
+                <td><img onclick="choose_sp(this)" id="深水区" src="sp/深水区.gif"></td>
+                <td><img onclick="choose_sp(this)" id="旋涡" src="sp/旋涡.png"></td>
+            </tr>
+            <tr>
+                <td><img onclick="choose_sp(this)" id="传送入口A" src="sp/传送入口A.png"></td>
+                <td><img onclick="choose_sp(this)" id="传送出口A" src="sp/传送出口A.png"></td>
+                <td><img onclick="choose_sp(this)" id="传送入口B" src="sp/传送入口B.png"></td>
+                <td><img onclick="choose_sp(this)" id="传送出口B" src="sp/传送出口B.png"></td>
+                <td><img onclick="choose_sp(this)" id="传送入口C" src="sp/传送入口C.png"></td>
+                <td><img onclick="choose_sp(this)" id="传送出口C" src="sp/传送出口C.png"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <div id="flip2" style="display:none">展开/收起路线编辑器</div>
+    <div id="panel2" style="display:none">
+        <div id="add_path">
+
+        </div>
+        <button onclick="create_path()" id="add" style="width: 200px;height: 50px;font-size:large">添加一条路线信息</button>
+    </div>
+    <script>
+        var landform = "";
+        var color = "";
+        var sp = "";
+        var eraser = false;
+        var rotate = false;
+        var mode = "map";
+        var prenode = {};
+        var prestop = false;
+        var all_path = new Array;
+        var one_path = new Array;
+        var one_stop = new Array;
+        $(document).ready(function () {
+            $("#flip1").click(function () {
+                $("#panel1").slideToggle("slow");
+            });
+            $("#flip2").click(function () {
+                $("#panel2").slideToggle("slow");
+            });
+            $(".block").click(function () {
+                change_block(this);
+            });
+        });
+        function choose_mode() {
+            if (mode === "map") {
+                document.getElementById("changeMode").innerHTML = "切换为地图编辑模式";
+                $("#flip2,#panel2").css("display", "");
+                $("#flip1,#panel1").css("display", "none");
+                $(".block").off("click");
+                document.getElementById('inform').innerHTML = "路线编辑模式";
+                mode = "path";
+                $("#add").css("display", "");
+            }
+            else {
+                document.getElementById("changeMode").innerHTML = "切换为路线编辑模式";
+                $("#flip1,#panel1").css("display", "");
+                $("#flip2,#panel2").css("display", "none");
+                $(".block").off("click");
+                $(".block").on("click", function () {
+                    change_block(this);
+                });
+                document.getElementById("map").innerHTML = "";
+                prenode = {};
+                prestop = false;
+                one_path = [];
+                one_stop = [];
+                document.getElementById('inform').innerHTML = "地图编辑模式";
+                mode = "map";
+            }
+        }
+        //地图编辑
+        function restore_block() {
+            sp = "";
+            landform = "";
+            color = "";
+            eraser = false;
+            rotate = false;
+        }
+        function choose_rotate() {
+            restore_block();
+            rotate = true;
+            document.getElementById('inform').innerHTML = "旋转";
+        }
+        function choose_eraser() {
+            restore_block();
+            eraser = true;
+            document.getElementById('inform').innerHTML = "橡皮擦";
+        }
+        function choose_landform(obj) {
+            restore_block();
+            landform = obj.src;
+            document.getElementById('inform').innerHTML = "基本地形：" + obj.id;
+        }
+        function choose_color() {
+            restore_block();
+            color = document.getElementById('picker').value;
+            document.getElementById('inform').innerHTML = "色块：" + color;
+        }
+        function choose_sp(obj) {
+            restore_block();
+            sp = obj.src;
+            document.getElementById('inform').innerHTML = "特殊地形：" + obj.id;
+        }
+        function change_block(obj) {
+            if (landform === "" && color === "" && sp === "" && !eraser && !rotate) {
+                alert('未选择色块或地形');
+            }
+            if (color != "") {
+                $(obj).css('background', "");
+                $(obj).css('background-color', 'white');
+                $(obj).css('background-color', color);
+            }
+            if (landform !== "") {
+                $(obj).css('background', "");
+                $(obj).css('background-color', 'white');
+                $(obj).css('background', "url(" + landform + ")");
+            }
+            if (sp !== "") {
+                obj.innerHTML = "";
+                obj.innerHTML = '<img src="' + sp + '">';
+            }
+            if (eraser) {
+                obj.innerHTML = "";
+                $(obj).css('background', "");
+                $(obj).css('background-color', 'white');
+            }
+            if (rotate) {
+                if (obj.innerHTML === "") {
+                    alert("没有可供旋转的内容");
+                }
+                else {
+                    if (!obj.firstElementChild.angle) {
+                        obj.firstElementChild.angle = "0";
+                    }
+                    var angle = parseInt(obj.firstElementChild.angle);
+                    (angle >= 360) ? (angle -= 360) : 1;
+                    angle = angle + 90;
+                    obj.firstElementChild.angle = angle;
+                    obj.firstElementChild.style.transform = "rotate(" + angle + "deg)";
+                }
+            }
+        }
+        //路线编辑
+        function create_path() {//创建一条路线信息
+            prenode = {};
+            prestop = {};
+            document.getElementById("map").innerHTML = "";
+            var add_path = document.getElementById("add_path");
+            var pathinfo = document.createElement("div");
+            pathinfo.innerHTML = '敌人名称：<input type="text" class="enemy_name" maxlength="20">敌人数量：<input type="number" class="enemy_name" style="width:40px">出现的时间：第<input type="number" class="appear_time" style="width:40px">秒<button class="finish" onclick="path_finish(this)">完成</button>';
+            pathinfo.className = "pathinfo";
+            pathinfo.style = "margin:10px";
+            add_path.append(pathinfo);
+            $("#add").css("display", "none");
+            $(".block").on("click", function () {
+                save_path(this);
+            });
+        }
+        function save_path(node) {//保存一条路线
+            var stop = print_path({
+                x: getLeft(node),
+                y: getTop(node)
+            });
+            one_path.push({
+                x: getLeft(node),
+                y: getTop(node)
+            });
+            if (stop) {
+                var time = prompt("请输入停留的时间（大于0的整数）：");
+                while (time === "" || parseInt(time) !== parseInt(time) || parseInt(time) <= 0) {
+                    time = prompt("请输入停留的时间（大于0的整数）：");
+                }
+                //console.log(typeof(time))
+                time = parseInt(time);
+                one_stop.push(time);
+                var timeobj = document.createElement('p');
+                timeobj.className = "time";
+                timeobj.innerHTML = time + "s";
+                timeobj.style.left = getLeft(stop) + "px";
+                timeobj.style.top = getTop(stop) + "px";
+                document.getElementById("map").append(timeobj);
+            }
+        }
+        function path_finish(path) {//保存路径信息，完成路径编辑
+            var thispath = {
+                enemy_name: path.parentNode.children[0].value,
+                enemy_num: path.parentNode.children[1].value,
+                appear_time: path.parentNode.children[2].value,
+                path: [],
+                stop: [],
+            };
+            if (thispath.enemy_name === "") {
+                alert("未填写敌人名字");
+                return 0;
+            }
+            if (thispath.enemy_num <= 0) {
+                alert("*龙门粗口*，你家的敌人数量小于等于0？");
+                return 0;
+            }
+            if (!thispath.appear_time) {
+                path.appear_time = 0;
+            }
+            if (thispath.appear_time < 0) {
+                alert("*乌萨斯粗口*，你家的敌人是负数时间出门的？");
+                return 0;
+            }
+            if (one_path == false && one_stop == false) {
+                alert("未填写任何路线信息和停留信息");
+                return 0;
+            }
+            thispath.path = one_path;
+            thispath.stop = one_stop;
+            all_path.push(thispath);
+            var add_path = document.getElementById("add_path");
+            add_path.lastElementChild.innerHTML = '敌人名称:' + thispath.enemy_name + '   敌人数量:' + thispath.enemy_num + '   出现的时间:第' + thispath.appear_time + '秒      <button class="printpath" onclick="show_path(this)">显示路径</button>  <button class="delpath" onclick="del_path(this)">删除路径</button>';
+            one_path = [];
+            one_stop = [];
+            prenode = {};
+            prestop = false;
+            document.getElementById("map").innerHTML = "";
+            // console.log(enemy_name);
+            // console.log(enemy_num);
+            // console.log(path.appear_time);
+            $("#add").css("display", "");
+            $(".block").off("click");
+        }
+        function show_path(info) {//展示路线和停留点
+            prenode = {};
+            prestop = false;
+            document.getElementById("map").innerHTML = "";
+            var i = 0;
+            var child = info.parentNode;
+            while ((child = child.previousSibling) != null) { i++; }
+            //console.log(i);
+            var thispath = all_path[i - 1];
+            var path = thispath.path;
+            var stop = thispath.stop;
+            prenode = path[0];
+            i = 1;
+            var j = 0;
+            while (i < path.length) {
+                var st = print_path(path[i]);
+                if (st) {
+                    console.log(st);
+                    time = stop[j];
+                    var timeobj = document.createElement('p');
+                    timeobj.className = "time";
+                    timeobj.innerHTML = time + "s";
+                    timeobj.style.left = getLeft(st) + "px";
+                    timeobj.style.top = getTop(st) + "px";
+                    document.getElementById("map").append(timeobj);
+                    j++;
+                }
+                i++;
+            }
+        }
+        function print_path(node) {//绘制路线
+            if (prenode) {
+                if (node.x === prenode.x && node.y === prenode.y) {
+                    if (prestop) {
+                        return 0;
+                    }
+                    var prenode_x = prenode.x;
+                    var prenode_y = prenode.y;
+                    var stopobj = document.createElement('img');
+                    stopobj.src = "path/stop.png";
+                    stopobj.className = "stop";
+                    stopobj.style.left = (prenode_x + 15) + "px";
+                    stopobj.style.top = (prenode_y + 15) + "px";
+                    document.getElementById("map").append(stopobj);
+                    prestop = true;
+                    //console.log(document.getElementById("map").lastElementChild);
+                    return document.getElementById("map").lastElementChild;
+                }
+                var node_x = node.x;
+                var node_y = node.y;
+                var prenode_x = prenode.x;
+                var prenode_y = prenode.y;
+                var ori_width = node_x - prenode_x;
+                var ori_height = node_y - prenode_y;
+                //console.log(ori_height);
+                //console.log(ori_width);
+                var long = Math.sqrt(ori_width * ori_width + ori_height * ori_height);
+                var angle = -((Math.atan2(ori_width, ori_height)) * 180) / Math.PI;
+                //console.log(angle);
+                var lineobj = document.createElement('img');
+                lineobj.src = "path/line.png";
+                lineobj.className = "line";
+                //console.log((prenode_y+node_y)/2);
+                lineobj.style.left = (prenode_x + 25) + "px";
+                lineobj.style.top = (prenode_y + 25) + "px";
+                lineobj.style.transformOrigin = "left top";
+                lineobj.style.transform = "rotate(" + angle + "deg)";
+                lineobj.style.height = long + "px";
+                document.getElementById("map").append(lineobj);
+                prestop = false;
+            }
+            prenode = node;
+            return false;
+        }
+        function del_path(info) {//删除路线
+            var i = 0;
+            var child = info.parentNode;
+            while ((child = child.previousSibling) != null) { i++; }
+            i -= 1;
+            all_path.splice(i,1);
+            info.parentNode.remove();
+        }
+        function getTop(e) {//获取元素的纵坐标
+            var offset = e.offsetTop;
+            if (e.offsetParent != null) offset += getTop(e.offsetParent);
+            return offset;
+            //return (e.getBoundingClientRect().top);
+        }
+        function getLeft(e) {//获取元素的横坐标 
+            var offset = e.offsetLeft;
+            if (e.offsetParent != null) offset += getLeft(e.offsetParent);
+            return offset;
+            //return e.getBoundingClientRect().left;
+        }
+        function getPositon(obj) {
+            console.log(obj.getBoundingClientRect().top);
+            console.log(obj.getBoundingClientRect().left);
+        }
+    </script>
+</body>
+
+</html>
